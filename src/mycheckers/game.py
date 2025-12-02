@@ -1,24 +1,38 @@
+from __future__ import annotations
+
+# MyCheckers -  Alternative solution for checkers game.
+# Copyright (C) 2025  UltraProcessor
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 import pygame
-import sys
-import time
 #from libcomponent import async_clock
 #import trio
 
 # Functions from the other files
 
-from ConfigureScreen import configure_screen, color_screen_black
-from ConfigureSize import configure_size, get_square_size, get_window_dimensions
-from DrawBoard import draw_board
-from InitialBoard import initial_board
-from MovePiece import move_piece
-from ValidMoves import valid_moves
-
-# Initialize the game
-pygame.init()
+from mycheckers.configure_screen import configure_screen, color_screen_black
+from mycheckers.configure_size import configure_size, get_square_size, get_window_dimensions
+from mycheckers.draw_board import draw_board
+from mycheckers.initial_board import initial_board
+from mycheckers.move_piece import move_piece
+from mycheckers.valid_moves import valid_moves
 
 
-def main():
+def run():
+    """Main game loop."""
     running = True
 
     # Initial draw
@@ -88,12 +102,16 @@ def main():
         screen.blit(board_surface, (margin_x, margin_y))
         pygame.display.update()
 
-    pygame.quit()
-    sys.exit()
 
+def main() -> None:
+    """Run game."""
+    # Initialize pygame
+    pygame.init()
+    try:
+        run()
+    finally:
+        pygame.quit()
 
 
 if __name__ == "__main__":
     main()
-
-

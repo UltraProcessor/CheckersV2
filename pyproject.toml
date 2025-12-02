@@ -1,7 +1,7 @@
 [project]
 name = "mycheckers"
 version = "0.1.0"
-description = "Add your description here"
+description = "Alternative solution for checkers game"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
