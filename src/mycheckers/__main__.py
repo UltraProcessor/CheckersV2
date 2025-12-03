@@ -19,9 +19,7 @@ from __future__ import annotations
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 from mycheckers import main
-
 
 if __name__ == "__main__":
     main()

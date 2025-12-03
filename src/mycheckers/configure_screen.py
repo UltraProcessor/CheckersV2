@@ -1,3 +1,5 @@
+"""Configure Screen."""
+
 from __future__ import annotations
 
 # MyCheckers -  Alternative solution for checkers game.
@@ -15,24 +17,23 @@ from __future__ import annotations
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
 import pygame
 
 # Constants
 BLACK = (0, 0, 0)
 
-def configure_screen():
+
+def configure_screen() -> pygame.surface.Surface:
+    """Configure display."""
     window_width, window_height = 640, 640
 
     pygame.display.set_caption("Checkers Game")
-    screen = pygame.display.set_mode((window_width, window_height), pygame.RESIZABLE)
+    return pygame.display.set_mode(
+        (window_width, window_height),
+        pygame.RESIZABLE,
+    )
 
-    return screen
 
-
-def color_screen_black(screen):
+def color_screen_black(screen: pygame.surface.Surface) -> None:
+    """Fill screen black."""
     screen.fill(BLACK)
-
-    return screen
-

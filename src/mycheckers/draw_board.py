@@ -1,3 +1,5 @@
+"""Draw (render) Board."""
+
 from __future__ import annotations
 
 # MyCheckers -  Alternative solution for checkers game.
@@ -15,9 +17,7 @@ from __future__ import annotations
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import pygame
-
 
 # Light brown color for squares
 LIGHT_BROWN = (238, 180, 125)
@@ -27,22 +27,34 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 
-def draw_board(board, square_size):
+def draw_board(
+    board: list[dict[int, str]],
+    square_size: int,
+) -> pygame.surface.Surface:
+    """Return rendered board surface."""
     surface = pygame.Surface((square_size * 8, square_size * 8))
 
-    row = 0
-    while row < 8:
-        col = 0
-        while col < 8:
-            if (row + col) % 2 == 0:
+    for row in range(8):
+        for col in range(8):
+            if (row + col + 1) & 1 == 0:
                 square_color = DARK_BROWN
-                rect = pygame.Rect(col * square_size, row * square_size, square_size, square_size)
+                rect = pygame.Rect(
+                    col * square_size,
+                    row * square_size,
+                    square_size,
+                    square_size,
+                )
 
                 pygame.draw.rect(surface, square_color, rect)
 
             else:
                 square_color = LIGHT_BROWN
-                rect = pygame.Rect(col * square_size, row * square_size, square_size, square_size)
+                rect = pygame.Rect(
+                    col * square_size,
+                    row * square_size,
+                    square_size,
+                    square_size,
+                )
 
                 pygame.draw.rect(surface, square_color, rect)
 
@@ -52,12 +64,14 @@ def draw_board(board, square_size):
             center_x = col * square_size + square_size // 2
             center_y = row * square_size + square_size // 2
 
-            if piece == 'R':
+            if piece == "R":
                 pygame.draw.circle(surface, RED, (center_x, center_y), radius)
-            elif piece == 'B':
-                pygame.draw.circle(surface, BLACK,(center_x, center_y), radius)
-
-            col = col + 1
-        row = row + 1
+            elif piece == "B":
+                pygame.draw.circle(
+                    surface,
+                    BLACK,
+                    (center_x, center_y),
+                    radius,
+                )
 
     return surface

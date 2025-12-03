@@ -1,3 +1,5 @@
+"""Initial Board."""
+
 from __future__ import annotations
 
 # MyCheckers -  Alternative solution for checkers game.
@@ -15,46 +17,32 @@ from __future__ import annotations
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import math
 
 
-def initial_board():
-    board = [
-        {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''},
-        {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''},
-        {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''},
-        {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''},
-        {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''},
-        {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''},
-        {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''},
-        {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: ''},
+def initial_board(
+    width: int = 8,
+    height: int = 8,
+) -> list[dict[int, str]]:
+    """Return initial board."""
+    board = [dict.fromkeys(range(1, width + 1), "") for _ in range(height)]
 
-    ]
+    player_row_count = math.ceil(height / 3)
 
     # Place red pieces ('W') on rows 1, 2, 3
-    row = 0
-    while row < 3:
-        col = 1
-        while col < 9:
-            if (row + col) % 2 == 1:  # Check if the square is dark (for white pieces)
-                board[row][col] = 'R'  # Place red piece
-
-            col = col + 1
-        row = row + 1
+    for row in range(player_row_count):
+        for col in range(width):
+            # Check if the square is dark (for white pieces)
+            if (row + col) & 1:
+                # Place red piece
+                board[row][col + 1] = "R"
 
     # Place black pieces ('W') on rows 6, 7, 8
-    row = 5
-    while row < 8:
-        col = 1
-        while col < 9:
-            if (row + col) % 2 == 1:  # Check if the square is dark (for white pieces)
-                board[row][col] = 'B'  # Place red piece
-
-            col = col + 1
-        row = row + 1
-
-
-    print("Initializing starter board..")
-    for row in board:
-        print(row)
+    for row in range(height - player_row_count, height):
+        for col in range(width):
+            # Check if the square is dark (for white pieces)
+            if (row + col) & 1:
+                # Place red piece
+                board[row][col + 1] = "B"
 
     return board

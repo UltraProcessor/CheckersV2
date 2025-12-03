@@ -28,7 +28,6 @@ __license__ = "GNU General Public License Version 3"
 
 from mycheckers.game import main as main
 
-
 if __name__ == "__main__":
     print(f"{__title__} v{__version__}\nProgrammed by {__author__}.\n")
     main()

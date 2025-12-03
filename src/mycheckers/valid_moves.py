@@ -1,3 +1,5 @@
+"""Valid Moves."""
+
 from __future__ import annotations
 
 # MyCheckers -  Alternative solution for checkers game.
@@ -17,31 +19,41 @@ from __future__ import annotations
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-def valid_moves(board, piece, row, col):
-    valid_moves = []
+def valid_moves(
+    board: list[dict[int, str]],
+    row: int,
+    col: int,
+) -> list[tuple[int, int]]:
+    """Return list oc valid move locations for given piece."""
+    valid_moves: list[tuple[int, int]] = []
 
+    # sc is 0-based, but dict uses 1-based
+    piece = board[row - 1][col]
+
+    directions: list[tuple[int, int]] = []
     # Red pieces move downwards (towards lower rows)
-    if piece == 'R':
+    if piece == "R":
         # down-left: (row+1, col-1), down-right: (row+1, col+1)
         directions = [(1, -1), (1, 1)]
 
     # Black pieces move upwards (towards higher rows)
-    elif piece == 'B':
+    elif piece == "B":
         # up-left: (row-1, col-1), up-right: (row-1, col+1)
         directions = [(-1, -1), (-1, 1)]
 
-    else:
-        return valid_moves  # If no valid piece, return empty list
-
     # Loop through each direction and check if the move is within bounds
-    for dr, dc in directions:
-        new_row = row + dr
-        new_col = col + dc
+    for direction_row, direction_column in directions:
+        new_row = row + direction_row
+        new_col = col + direction_column
 
-        # Check if the move is within bounds (1 <= row <= 8 and 1 <= col <= 8)
-        if 1 <= new_row <= 8 and 1 <= new_col <= 8:
-            # Ensure the destination square is empty (no other pieces present)
-            if board[new_row - 1][new_col] == '':
-                valid_moves.append((new_row, new_col))
+        # Check if the move is within bounds (1 <= row <= 8 and 1 <= col
+        # <= 8) and ensure the destination square is empty (no other
+        # pieces present)
+        if (
+            1 <= new_row <= 8
+            and 1 <= new_col <= 8
+            and board[new_row - 1][new_col] == ""
+        ):
+            valid_moves.append((new_row, new_col))
 
     return valid_moves

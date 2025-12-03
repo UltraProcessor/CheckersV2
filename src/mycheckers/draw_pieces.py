@@ -1,3 +1,5 @@
+"""Draw Pieces."""
+
 from __future__ import annotations
 
 # MyCheckers -  Alternative solution for checkers game.

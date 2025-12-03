@@ -1,3 +1,5 @@
+"""Checkers Game."""
+
 from __future__ import annotations
 
 # MyCheckers -  Alternative solution for checkers game.
@@ -15,29 +17,34 @@ from __future__ import annotations
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
 import pygame
-#from libcomponent import async_clock
-#import trio
 
+# from libcomponent import async_clock
+# import trio
 # Functions from the other files
-
-from mycheckers.configure_screen import configure_screen, color_screen_black
-from mycheckers.configure_size import configure_size, get_square_size, get_window_dimensions
+from mycheckers.configure_screen import color_screen_black, configure_screen
+from mycheckers.configure_size import (
+    configure_size,
+    get_square_size,
+)
 from mycheckers.draw_board import draw_board
 from mycheckers.initial_board import initial_board
-from mycheckers.move_piece import move_piece
+from mycheckers.move_piece import move_piece, print_board
 from mycheckers.valid_moves import valid_moves
 
 
-def run():
-    """Main game loop."""
+def run() -> None:
+    """Event loop."""
     running = True
 
     # Initial draw
     screen = configure_screen()
+
+    print("Initializing starter board..")
     board = initial_board()
+
+    print_board(board)
+
     square_size = get_square_size()
     board_surface = draw_board(board, square_size)
     margin_x, margin_y = 0, 0
@@ -47,7 +54,6 @@ def run():
     selected_moves = []
 
     while running:
-
         # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -66,33 +72,55 @@ def run():
                     # Get a valid piece
                     if piece != "":
                         selected_piece = (row, col)
-                        selected_moves = valid_moves(board, piece, row + 1, col + 1)
+                        selected_moves = valid_moves(
+                            board,
+                            row + 1,
+                            col + 1,
+                        )
                         print(f"Selected {piece} at {(row, col)}")
                         print("Moves:", selected_moves)
 
                     # If already selected, continue
                     elif selected_piece:
                         selected_row, selected_col = selected_piece
-                        piece = board[selected_row][selected_col + 1]  # sc is 0-based, but dict uses 1-based
+                        # sc is 0-based, but dict uses 1-based
+                        piece = board[selected_row][selected_col + 1]
 
                         # Try to move, convert to 1-based coordinates
-                        moved = move_piece(board, piece, selected_row + 1, selected_col + 1, row + 1, col + 1)
+                        moved = move_piece(
+                            board,
+                            selected_row + 1,
+                            selected_col + 1,
+                            row + 1,
+                            col + 1,
+                        )
 
                         if moved:
+                            print(
+                                f"{piece} piece moved from ({selected_row + 1}, {selected_col + 1}) to ({row + 1}, {col + 1})",
+                            )
+                            print_board(board)
                             # switch players
-                            current_player = "r" if current_player == "b" else "b"
+                            current_player = (
+                                "r" if current_player == "b" else "b"
+                            )
                             selected_piece = None
                             selected_moves = []
                             board_surface = draw_board(board, square_size)
 
                         else:
-                            print("Invalid move")
+                            print(
+                                f"Invalid move from ({selected_row + 1}, {selected_col + 1}) to ({row + 1}, {col + 1})",
+                            )
 
         # --- SCREEN COLOR ---
         color_screen_black(screen)
 
         # --- RESIZE HANDLING ---
-        new_board_surface, margin_x, margin_y, new_size = configure_size(screen, board)
+        new_board_surface, margin_x, margin_y, new_size = configure_size(
+            screen,
+            board,
+        )
 
         if new_board_surface is not None:
             board_surface = new_board_surface
