@@ -54,4 +54,10 @@ def move_piece(
 
 def print_board(board: list[dict[int, str]]) -> None:
     """Print board data."""
-    print("\n".join(map(repr, board)))
+    board_string = ""
+    for row in board:
+        for _column, value in row.items():
+            display = value.upper() if value else " "
+            board_string += f"[ {display} ]"
+        board_string += "\n"
+    print(board_string)
