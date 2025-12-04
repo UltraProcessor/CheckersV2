@@ -34,12 +34,12 @@ def valid_moves(
     # Red pieces move downwards (towards lower rows)
     if piece == "R":
         # down-left: (row+1, col-1), down-right: (row+1, col+1)
-        directions = [(1, -1), (1, 1)]
+        directions = [(1, -1), (1, 1), (2, -2), (2, 2)]
 
     # Black pieces move upwards (towards higher rows)
     elif piece == "B":
         # up-left: (row-1, col-1), up-right: (row-1, col+1)
-        directions = [(-1, -1), (-1, 1)]
+        directions = [(-1, -1), (-1, 1), (-2, -2), (-2, 2)]
 
     # Loop through each direction and check if the move is within bounds
     for direction_row, direction_column in directions:

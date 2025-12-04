@@ -34,6 +34,7 @@ from mycheckers.configure_size import (
     get_square_size,
 )
 from mycheckers.draw_board import draw_board
+from mycheckers.draw_pieces import draw_pieces
 from mycheckers.initial_board import initial_board
 from mycheckers.move_piece import move_piece, print_board
 from mycheckers.valid_moves import valid_moves
@@ -51,7 +52,7 @@ def redraw_board(
     color_screen_black(screen)
 
     draw_board(screen, board, square_size, location)
-
+    draw_pieces(screen, board, square_size, location)
 
 def handle_left_click_event(
     event: pygame.event.Event,
@@ -109,7 +110,7 @@ def handle_left_click_event(
             )
             print_board(board)
 
-            redraw_board(screen, board, square_size)
+            redraw_board(screen, board, square_size, (margin_x, margin_y))
 
             return None
 
@@ -131,7 +132,8 @@ async def run() -> None:
 
     print_board(board)
 
-    redraw_board(screen, board, get_square_size(screen.get_size()))
+    margin_x, margin_y, square_size = configure_size(screen.get_size())
+    redraw_board(screen, board, square_size, (margin_x, margin_y))
 
     selected_piece: tuple[int, int] | None = None  # (row, col)
 
@@ -168,6 +170,9 @@ async def run() -> None:
                                 board,
                                 selected_piece,
                             )
+                        elif event.type == pygame.WINDOWRESIZED:
+                            margin_x, margin_y, square_size = configure_size(screen.get_size())
+                            redraw_board(screen, board, square_size, (margin_x, margin_y))
 
                     # --- CLOCK ---
                     _time_passed_ns = await clock.tick(FPS)

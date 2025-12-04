@@ -59,24 +59,3 @@ def draw_board(
                 )
 
                 pygame.draw.rect(surface, square_color, rect)
-
-            # Draw the pieces, if any
-            piece = board[row][col + 1]
-            radius = square_size // 2 - 5
-            center_x = col * square_size + square_size // 2
-            center_y = row * square_size + square_size // 2
-
-            if piece == "R":
-                pygame.draw.circle(
-                    surface,
-                    RED,
-                    (center_x + board_x, center_y + board_y),
-                    radius,
-                )
-            elif piece == "B":
-                pygame.draw.circle(
-                    surface,
-                    BLACK,
-                    (center_x + board_x, center_y + board_y),
-                    radius,
-                )
