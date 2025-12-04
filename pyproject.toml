@@ -9,6 +9,7 @@ readme = {file = "README.md", content-type = "text/markdown"}
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
 dependencies = [
+    "checkers",
     "libcomponent>=0.0.5",
     "pygame>=2.6.1",
     "trio>=0.32.0",
@@ -39,6 +40,9 @@ checkers = ["py.typed"]
 
 [tool.uv]
 package = true
+
+[tool.uv.sources]
+checkers = { git = "https://github.com/CoolCat467/Checkers.git" }
 
 [tool.mypy]
 files = [

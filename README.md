@@ -12,7 +12,8 @@ This is a WIP alternative solution for a checkers game
 Ensure Python 3 is installed, and use pip to install this project.
 
 ```bash
-pip install git+https://github.com/UltraProcessor/CheckersV2.git
+pip install uv
+uv pip install git+https://github.com/UltraProcessor/CheckersV2.git
 ```
 
 ## Usage

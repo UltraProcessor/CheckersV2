@@ -28,19 +28,21 @@ RED = (255, 0, 0)
 
 
 def draw_board(
+    surface: pygame.surface.Surface,
     board: list[dict[int, str]],
     square_size: int,
-) -> pygame.surface.Surface:
+    location: tuple[int, int] = (0, 0),
+) -> None:
     """Return rendered board surface."""
-    surface = pygame.Surface((square_size * 8, square_size * 8))
+    board_x, board_y = location
 
     for row in range(8):
         for col in range(8):
             if (row + col + 1) & 1 == 0:
                 square_color = DARK_BROWN
                 rect = pygame.Rect(
-                    col * square_size,
-                    row * square_size,
+                    col * square_size + board_x,
+                    row * square_size + board_y,
                     square_size,
                     square_size,
                 )
@@ -50,8 +52,8 @@ def draw_board(
             else:
                 square_color = LIGHT_BROWN
                 rect = pygame.Rect(
-                    col * square_size,
-                    row * square_size,
+                    col * square_size + board_x,
+                    row * square_size + board_y,
                     square_size,
                     square_size,
                 )
@@ -65,13 +67,16 @@ def draw_board(
             center_y = row * square_size + square_size // 2
 
             if piece == "R":
-                pygame.draw.circle(surface, RED, (center_x, center_y), radius)
+                pygame.draw.circle(
+                    surface,
+                    RED,
+                    (center_x + board_x, center_y + board_y),
+                    radius,
+                )
             elif piece == "B":
                 pygame.draw.circle(
                     surface,
                     BLACK,
-                    (center_x, center_y),
+                    (center_x + board_x, center_y + board_y),
                     radius,
                 )
-
-    return surface

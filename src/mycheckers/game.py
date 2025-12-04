@@ -1,5 +1,7 @@
 """Checkers Game."""
 
+# Programmed by UltraProcessor
+
 from __future__ import annotations
 
 # MyCheckers -  Alternative solution for checkers game.
@@ -17,11 +19,15 @@ from __future__ import annotations
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import pygame
+import traceback
+from typing import Final
 
-# from libcomponent import async_clock
-# import trio
-# Functions from the other files
+import pygame
+import trio
+from checkers.client import GameClient
+from libcomponent.async_clock import Clock
+from libcomponent.component import ExternalRaiseManager
+
 from mycheckers.configure_screen import color_screen_black, configure_screen
 from mycheckers.configure_size import (
     configure_size,
@@ -32,8 +38,88 @@ from mycheckers.initial_board import initial_board
 from mycheckers.move_piece import move_piece, print_board
 from mycheckers.valid_moves import valid_moves
 
+FPS: Final = 48
 
-def run() -> None:
+
+def redraw_board(
+    screen: pygame.surface.Surface,
+    board: list[dict[int, str]],
+    square_size: int,
+    location: tuple[int, int] = (0, 0),
+) -> None:
+    """Render game board."""
+    color_screen_black(screen)
+
+    draw_board(screen, board, square_size, location)
+
+
+def handle_left_click_event(
+    event: pygame.event.Event,
+    screen: pygame.surface.Surface,
+    board: list[dict[int, str]],
+    selected_piece: tuple[int, int] | None = None,
+) -> tuple[int, int] | None:
+    """Return selected piece."""
+    margin_x, margin_y, square_size = configure_size(screen.get_size())
+
+    mx, my = event.pos
+
+    col = (mx - margin_x) // square_size
+    row = (my - margin_y) // square_size
+
+    if row < 0 or row >= 8:
+        return selected_piece
+    if col < 0 or col >= 8:
+        return selected_piece
+
+    key = col + 1
+    piece = board[row][key]
+
+    # Get a valid piece
+    if piece != "":
+        selected_piece = (row, col)
+        selected_moves = valid_moves(
+            board,
+            row + 1,
+            col + 1,
+        )
+        print(f"Selected {piece} at {(row, col)}")
+        print("Moves:", selected_moves)
+
+        return selected_piece
+
+    # If already selected, continue
+    if selected_piece:
+        selected_row, selected_col = selected_piece
+        # sc is 0-based, but dict uses 1-based
+        piece = board[selected_row][selected_col + 1]
+
+        # Try to move, convert to 1-based coordinates
+        moved = move_piece(
+            board,
+            selected_row + 1,
+            selected_col + 1,
+            row + 1,
+            col + 1,
+        )
+
+        if moved:
+            print(
+                f"{piece} piece moved from ({selected_row + 1}, {selected_col + 1}) to ({row + 1}, {col + 1})",
+            )
+            print_board(board)
+
+            redraw_board(screen, board, square_size)
+
+            return None
+
+        print(
+            f"Invalid move from ({selected_row + 1}, {selected_col + 1}) to ({row + 1}, {col + 1})",
+        )
+    return selected_piece
+
+
+async def run() -> None:
     """Event loop."""
     running = True
 
@@ -45,90 +131,49 @@ def run() -> None:
 
     print_board(board)
 
-    square_size = get_square_size()
-    board_surface = draw_board(board, square_size)
-    margin_x, margin_y = 0, 0
+    redraw_board(screen, board, get_square_size(screen.get_size()))
 
-    current_player = "R"
-    selected_piece = None  # (row, col)
-    selected_moves = []
+    selected_piece: tuple[int, int] | None = None  # (row, col)
 
-    while running:
-        # Event handling
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+    clock = Clock()
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                mx, my = pygame.mouse.get_pos()
-
-                col = (mx - margin_x) // square_size
-                row = (my - margin_y) // square_size
-
-                if 0 <= row < 8 and 0 <= col < 8:
-                    key = col + 1
-                    piece = board[row][key]
-
-                    # Get a valid piece
-                    if piece != "":
-                        selected_piece = (row, col)
-                        selected_moves = valid_moves(
-                            board,
-                            row + 1,
-                            col + 1,
-                        )
-                        print(f"Selected {piece} at {(row, col)}")
-                        print("Moves:", selected_moves)
-
-                    # If already selected, continue
-                    elif selected_piece:
-                        selected_row, selected_col = selected_piece
-                        # sc is 0-based, but dict uses 1-based
-                        piece = board[selected_row][selected_col + 1]
-
-                        # Try to move, convert to 1-based coordinates
-                        moved = move_piece(
-                            board,
-                            selected_row + 1,
-                            selected_col + 1,
-                            row + 1,
-                            col + 1,
-                        )
-
-                        if moved:
-                            print(
-                                f"{piece} piece moved from ({selected_row + 1}, {selected_col + 1}) to ({row + 1}, {col + 1})",
-                            )
-                            print_board(board)
-                            # switch players
-                            current_player = (
-                                "r" if current_player == "b" else "b"
-                            )
-                            selected_piece = None
-                            selected_moves = []
-                            board_surface = draw_board(board, square_size)
-
-                        else:
-                            print(
-                                f"Invalid move from ({selected_row + 1}, {selected_col + 1}) to ({row + 1}, {col + 1})",
-                            )
-
-        # --- SCREEN COLOR ---
-        color_screen_black(screen)
-
-        # --- RESIZE HANDLING ---
-        new_board_surface, margin_x, margin_y, new_size = configure_size(
-            screen,
-            board,
+    async with trio.open_nursery() as main_nursery:
+        event_manager = ExternalRaiseManager(
+            "checkers",
+            main_nursery,  # "client"
         )
 
-        if new_board_surface is not None:
-            board_surface = new_board_surface
-            square_size = new_size
+        async with GameClient("game_client") as client:
+            with event_manager.temporary_component(client):
+                while running:
+                    # Event handling
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            running = False
 
-        # --- DRAWING ---
-        screen.blit(board_surface, (margin_x, margin_y))
-        pygame.display.update()
+                        elif (
+                            event.type == pygame.KEYUP
+                            and event.key == pygame.K_ESCAPE
+                        ):
+                            # Trigger quit if presses the escape key
+                            pygame.event.post(pygame.event.Event(pygame.QUIT))
+
+                        elif (
+                            event.type == pygame.MOUSEBUTTONDOWN
+                            and event.button == 1
+                        ):
+                            selected_piece = handle_left_click_event(
+                                event,
+                                screen,
+                                board,
+                                selected_piece,
+                            )
+
+                    # --- CLOCK ---
+                    _time_passed_ns = await clock.tick(FPS)
+
+                    # --- DRAWING ---
+                    pygame.display.update()
 
 
 def main() -> None:
@@ -136,7 +181,9 @@ def main() -> None:
     # Initialize pygame
     pygame.init()
     try:
-        run()
+        trio.run(run)
+    except BaseException as exc:
+        traceback.print_exception(exc)
     finally:
         pygame.quit()
 

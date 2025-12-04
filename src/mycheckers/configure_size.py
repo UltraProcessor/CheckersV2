@@ -21,36 +21,27 @@ import pygame
 
 
 def configure_size(
-    screen: pygame.surface.Surface,
-    board: list[dict[int, str]],
-) -> tuple[pygame.surface.Surface | None, int, int, int]:
-    """Return (board surface, x margin, y margin, square size)."""
-    ##if not hasattr(configure_size, "previous_square_size"):
-    ##    configure_size.previous_square_size = -1
-
-    width, height = pygame.display.get_surface().get_size()
-    square_size = min(width, height) // 8
+    screen_size: tuple[int, int],
+) -> tuple[int, int, int]:
+    """Return (x margin, y margin, square size)."""
+    width, height = screen_size
+    square_size = get_square_size(screen_size)
 
     board_size_pixels = square_size * 8
     margin_x = (width - board_size_pixels) // 2
     margin_y = (height - board_size_pixels) // 2
 
-    board_surface: pygame.surface.Surface | None = None
-    ##if square_size != configure_size.previous_square_size:
-    ##    board_surface = draw_board(board, square_size)
-    ##    configure_size.previous_square_size = square_size
-
-    return board_surface, margin_x, margin_y, square_size
+    return margin_x, margin_y, square_size
 
 
-def get_square_size() -> int:
+def get_square_size(
+    screen_size: tuple[int, int],
+) -> int:
     """Return square size."""
-    window_width, window_height = get_window_dimensions()
+    window_width, window_height = screen_size
     return min(window_width, window_height) // 8
 
 
 def get_window_dimensions() -> tuple[int, int]:
     """Return window dimensions."""
-    window_width, window_height = pygame.display.get_surface().get_size()
-
-    return window_width, window_height
+    return pygame.display.get_surface().get_size()
