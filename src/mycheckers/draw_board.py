@@ -23,7 +23,7 @@ import pygame
 LIGHT_BROWN = (238, 180, 125)
 # Dark brown color for squares
 DARK_BROWN = (123, 63, 0)
-BLACK = (0, 0, 0)
+BLACK = (10, 10, 10)
 RED = (255, 0, 0)
 
 
