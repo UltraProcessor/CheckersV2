@@ -28,11 +28,13 @@ from checkers.client import GameClient
 from libcomponent.async_clock import Clock
 from libcomponent.component import ExternalRaiseManager
 
-from mycheckers.configure_screen import color_screen_black, configure_screen
-from mycheckers.configure_size import (
+from mycheckers.configure_screen import (
+    color_screen_black,
+    configure_screen,
     configure_size,
-    get_square_size,
+    get_window_dimensions,
 )
+
 from mycheckers.draw_board import draw_board
 from mycheckers.draw_pieces import draw_pieces
 from mycheckers.initial_board import initial_board
@@ -40,6 +42,66 @@ from mycheckers.move_piece import move_piece, print_board
 from mycheckers.valid_moves import valid_moves
 
 FPS: Final = 48
+
+# Commit: Delete configure_size.py and put functions into configure_screen.py, add main_menu
+
+def draw_menu_button(screen: pygame.surface.Surface,
+                    text: str,
+                     x: int,
+                     y: int,
+                     width: int,
+                     height: int
+) -> pygame.Rect:
+
+    rect = pygame.Rect(x, y, width, height)
+    pygame.draw.rect(screen, (180, 0, 0), rect, border_radius=8)
+    pygame.draw.rect(screen, (0, 0, 0), rect, 3, border_radius=8)
+
+    FONT = pygame.font.SysFont("arial", 30)
+
+    label = FONT.render(text, True, (255, 255, 255))
+
+    screen.blit(label, (x + (width - label.get_width())//2,
+                     y + (height - label.get_height())//2))
+    return rect
+
+
+def main_menu(screen: pygame.surface.Surface) -> int:
+    response = -1
+
+    window_width, window_height = get_window_dimensions()
+
+    run = True
+    while run:
+        color_screen_black(screen)
+
+        FONT = pygame.font.SysFont("arial", 40)
+
+        title = FONT.render("CHEKURS™️", True, (255, 255, 255))
+
+        screen.blit(title, (window_width // 2 - title.get_width() // 2, 50))
+
+        solo_btn = draw_menu_button(screen, "Solo", 200, 170, 200, 60)
+        pvsai_btn = draw_menu_button(screen, "Player vs. AI", 200, 260, 200, 60)
+        multi_btn = draw_menu_button(screen,"Multiplayer", 200, 350, 200, 60)
+
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if solo_btn.collidepoint(event.pos):
+                    return 0
+                if pvsai_btn.collidepoint(event.pos):
+                    return 1
+                if multi_btn.collidepoint(event.pos):
+                    return 2
+
+    return response
+
 
 
 def redraw_board(
@@ -186,7 +248,24 @@ def main() -> None:
     # Initialize pygame
     pygame.init()
     try:
-        trio.run(run)
+        screen = configure_screen()
+        response = main_menu(screen)
+
+        if response == 0:
+            print("Launching solo game..")
+            trio.run(run)
+
+        elif response == 1:
+            print("Launching player vs. AI..")
+            trio.run(run)
+
+        elif response == 2:
+            print("Launching multiplayer..")
+            trio.run(run)
+
+        else:
+            print("Something went wrong")
+
     except BaseException as exc:
         traceback.print_exception(exc)
     finally:

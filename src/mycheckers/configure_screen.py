@@ -37,3 +37,30 @@ def configure_screen() -> pygame.surface.Surface:
 def color_screen_black(screen: pygame.surface.Surface) -> None:
     """Fill screen black."""
     screen.fill(BLACK)
+
+
+def configure_size(
+    screen_size: tuple[int, int],
+) -> tuple[int, int, int]:
+    """Return (x margin, y margin, square size)."""
+    width, height = screen_size
+    square_size = get_square_size(screen_size)
+
+    board_size_pixels = square_size * 8
+    margin_x = (width - board_size_pixels) // 2
+    margin_y = (height - board_size_pixels) // 2
+
+    return margin_x, margin_y, square_size
+
+
+def get_square_size(
+    screen_size: tuple[int, int],
+) -> int:
+    """Return square size."""
+    window_width, window_height = screen_size
+    return min(window_width, window_height) // 8
+
+
+def get_window_dimensions() -> tuple[int, int]:
+    """Return window dimensions."""
+    return pygame.display.get_surface().get_size()
