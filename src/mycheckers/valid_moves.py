@@ -41,6 +41,10 @@ def valid_moves(
         # up-left: (row-1, col-1), up-right: (row-1, col+1)
         directions = [(-1, -1), (-1, 1), (-2, -2), (-2, 2)]
 
+    # If a red or black king, can move in all directions. Combines "R" and "B" directions.
+    elif piece == "RR" or piece == "BB":
+        directions = [(1, -1), (1, 1), (2, -2), (2, 2), (-1, -1), (-1, 1), (-2, -2), (-2, 2)]
+
     # Loop through each direction and check if the move is within bounds
     for direction_row, direction_column in directions:
         new_row = row + direction_row

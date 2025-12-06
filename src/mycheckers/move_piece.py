@@ -30,21 +30,33 @@ def move_piece(
     """Return if able to move piece from start position to end position successfully."""
     possible_moves = valid_moves(board, start_row, start_col)
 
+    # Get current piece and any possible locations
     piece = board[start_row - 1][start_col]
+    mid_row = (start_row + end_row) // 2
+    mid_col = (start_col + end_col) // 2
 
     # If move is not in the list of valid moves, return false.
     if (end_row, end_col) not in possible_moves:
         return False
 
     # If it's a capture, remove the piece that is jumped over
-    if abs(end_row - start_row) == 2 and abs(end_col - start_col) == 2:
-        mid_row = (start_row + end_row) // 2
-        mid_col = (start_col + end_col) // 2
+    if (board[mid_row - 1][mid_col] == "R" or
+        board[mid_row - 1][mid_col] == "B" or
+        board[mid_row - 1][mid_col] == "RR" or
+        board[mid_row - 1][mid_col] == "BB"
+    ):
         # Remove the captured piece
         board[mid_row - 1][mid_col] = ""
 
-    # Move the piece
-    # Place the piece at the destination
+    # If red and in enemy's territory, promote to king
+    if board[end_row -1][end_col] == "R" and end_row == 8:
+        board[end_row - 1][end_col] = "RR"
+
+    # If black and in enemy's territory, promote to king
+    elif board[end_row -1][end_col] == "B" and end_row == 1:
+        board[end_row - 1][end_col] = "BB"
+
+    # Move & place the piece at the destination
     board[end_row - 1][end_col] = piece
     # Erase original location
     board[start_row - 1][start_col] = ""
