@@ -43,8 +43,6 @@ from mycheckers.valid_moves import valid_moves
 
 FPS: Final = 48
 
-# Commit: Delete configure_size.py and put functions into configure_screen.py, add main_menu
-
 def draw_menu_button(screen: pygame.surface.Surface,
                     text: str,
                      x: int,
