@@ -17,7 +17,7 @@ from __future__ import annotations
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from mycheckers.valid_moves import valid_moves
+from mycheckers.valid_moves import valid_moves, valid_captures
 
 
 def move_piece(
@@ -27,39 +27,45 @@ def move_piece(
     end_row: int,
     end_col: int,
 ) -> bool:
-    """Return if able to move piece from start position to end position successfully."""
+    """Return if able to move or capture pieces from start position to end position successfully."""
     possible_moves = valid_moves(board, start_row, start_col)
+    possible_captures = valid_captures(board, start_row, start_col)
 
     # Get current piece and any possible locations
     piece = board[start_row - 1][start_col]
     mid_row = (start_row + end_row) // 2
     mid_col = (start_col + end_col) // 2
 
+
+    # If it's a capture, add possible_captures to possible_moves
+    if board[mid_row - 1][mid_col] != "":
+
+        # Append movesets from valid_captures into possible_moves
+        possible_moves += possible_captures
+        print("Added moves: ", possible_moves)
+
     # If move is not in the list of valid moves, return false.
     if (end_row, end_col) not in possible_moves:
         return False
 
-    # If it's a capture, remove the piece that is jumped over
-    if (board[mid_row - 1][mid_col] == "R" or
-        board[mid_row - 1][mid_col] == "B" or
-        board[mid_row - 1][mid_col] == "RR" or
-        board[mid_row - 1][mid_col] == "BB"
-    ):
+    if board[mid_row - 1][mid_col] != "":
         # Remove the captured piece
         board[mid_row - 1][mid_col] = ""
-
-    # If red and in enemy's territory, promote to king
-    if board[end_row -1][end_col] == "R" and end_row == 8:
-        board[end_row - 1][end_col] = "RR"
-
-    # If black and in enemy's territory, promote to king
-    elif board[end_row -1][end_col] == "B" and end_row == 1:
-        board[end_row - 1][end_col] = "BB"
 
     # Move & place the piece at the destination
     board[end_row - 1][end_col] = piece
     # Erase original location
     board[start_row - 1][start_col] = ""
+
+    # If red and in enemy's territory, promote to king
+    if piece == "R" and end_row == 8:
+        print("Promoting to king..")
+        board[end_row - 1][end_col] = "RR"
+
+    # If black and in enemy's territory, promote to king
+    if piece == "B" and end_row == 1:
+        print("Promoting to king..")
+        board[end_row - 1][end_col] = "BB"
 
     return True
 
@@ -69,7 +75,17 @@ def print_board(board: list[dict[int, str]]) -> None:
     board_string = ""
     for row in board:
         for _column, value in row.items():
-            display = value.upper() if value else " "
+            if value:
+                if len(value) == 1:
+                    display = value.upper() + " "
+                elif len(value) == 2:
+                    display = value.upper()
+                else:
+                    display = "  "
+            else:
+                display = "  "  # empty square
+
             board_string += f"[ {display} ]"
         board_string += "\n"
+
     print(board_string)

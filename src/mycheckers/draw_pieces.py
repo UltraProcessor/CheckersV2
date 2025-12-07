@@ -25,7 +25,7 @@ import pygame
 # Constants
 BLACK = (10, 10, 10)
 RED = (255, 0, 0)
-LIGHT_BLACK = (50, 50, 50)
+LIGHT_BLACK = (40, 40, 40)
 DARK_RED = (220, 30, 30)
 
 def draw_pieces(

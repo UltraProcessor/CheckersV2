@@ -39,7 +39,7 @@ from mycheckers.draw_board import draw_board
 from mycheckers.draw_pieces import draw_pieces
 from mycheckers.initial_board import initial_board
 from mycheckers.move_piece import move_piece, print_board
-from mycheckers.valid_moves import valid_moves
+from mycheckers.valid_moves import valid_moves, valid_captures
 
 FPS: Final = 48
 
@@ -101,7 +101,6 @@ def main_menu(screen: pygame.surface.Surface) -> int:
     return response
 
 
-
 def redraw_board(
     screen: pygame.surface.Surface,
     board: list[dict[int, str]],
@@ -144,8 +143,14 @@ def handle_left_click_event(
             row + 1,
             col + 1,
         )
+        selected_captures = valid_captures(
+            board,
+            row + 1,
+            col + 1,
+        )
         print(f"Selected {piece} at {(row, col)}")
         print("Moves:", selected_moves)
+        print("Captures:", selected_captures)
 
         return selected_piece
 
